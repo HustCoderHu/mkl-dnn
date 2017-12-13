@@ -2672,12 +2672,13 @@ bool jit_avx512_common_conv_bwd_weights_kernel_f32::flat_4ops_compute() {
         }
 
         for (int ow = 0; ow < j.ow; ow += 4) {
-            for (int _ow = ow; _ow < ow + 4; ++_ow) {
+            for (int _ow = ow; ; ++_ow) {
                 auto vdst = zmm_dst(_ow);
                 if (_ow < j.ow)
                     vmovups(vdst, addr_dst(_ow));
                 else
                     vpxord(vdst, vdst, vdst);
+                if (_ow >= ow + 4) break;
             }
 
             for (int kh = 0; kh < kh_step; ++kh) {
